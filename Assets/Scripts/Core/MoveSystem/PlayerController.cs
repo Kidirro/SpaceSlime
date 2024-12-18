@@ -1,12 +1,14 @@
+using System;
 using UnityEngine;
 
-public class PlayerController : MonoBehaviour, ICameraRotator
+public class PlayerController : MonoBehaviour, ICameraRotator, ICharacterMover
 {
+    [Space]
+    [Header("Camera")]
+
     [SerializeField] 
     private Transform rotationObject;
 
-    [Space]
-    [Header("Camera")]
     
     [SerializeField]
     [Range(0,10)]
@@ -21,11 +23,28 @@ public class PlayerController : MonoBehaviour, ICameraRotator
     [Range(0, 90)]
     private float minAngleVerticalCamera = 90;
     
-    
+    [Header("Move")]
+    [SerializeField] 
+    private Transform moveObject;
+
+    [SerializeField] 
+    private float moveSpeed;
+
 
     private float _cameraVerticalRotation = 0;
     private float _cameraHorizontalRotation = 0;
-    
+
+    private void Awake()
+    {
+        if (rotationObject == null)
+            rotationObject = transform;
+        
+        if (moveObject == null)
+            moveObject = transform;
+        
+    }
+
+
     void Start ()
     {   
         Rigidbody rb = GetComponent<Rigidbody>();
@@ -44,5 +63,17 @@ public class PlayerController : MonoBehaviour, ICameraRotator
         _cameraVerticalRotation = Mathf.Clamp(_cameraVerticalRotation, -minAngleVerticalCamera, maxAngleVerticalCamera);
         
         rotationObject.localEulerAngles = (Vector3.right * _cameraVerticalRotation) + (Vector3.up * _cameraHorizontalRotation);
+    }
+
+    public void Move(Vector2 move)
+    {
+        // Получаем вращение без наклона камеры
+        Quaternion yawRotation = Quaternion.Euler(0, rotationObject.eulerAngles.y, 0);
+
+        // Вычисляем вектор движения
+        Vector3 moveVector = yawRotation * new Vector3(move.x, 0, move.y);
+
+        // Перемещаем объект
+        moveObject.Translate(moveVector * moveSpeed * Time.deltaTime, Space.World); 
     }
 }

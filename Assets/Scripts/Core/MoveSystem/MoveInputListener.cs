@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -27,7 +28,15 @@ public class MoveInputListener : MonoBehaviour
         
         if (TryGetComponent(typeof(ICharacterMover), out var mover))
         {
-            _characterMover = (ICharacterMover)jumper;
+            _characterMover = (ICharacterMover)mover;
+        }
+    }
+
+    private void Start()
+    {
+        if (_characterMover != null)
+        {
+            StartCoroutine(MoveChecker());
         }
     }
 
@@ -36,7 +45,7 @@ public class MoveInputListener : MonoBehaviour
         if (_cameraRotator != null)
         {
             _gameInput.Player.Look.performed += LookOnPerformed;
-        }   
+        }
     }
     
     private void OnDisable()
@@ -53,4 +62,21 @@ public class MoveInputListener : MonoBehaviour
 
         _cameraRotator.Rotate(rotation);
     }
+
+
+    private IEnumerator MoveChecker()
+    {
+        while (true)
+        {
+            MovePerformed(_gameInput.Player.Move.ReadValue<Vector2>());
+            yield return null;
+        }
+    }
+    
+    private void MovePerformed(Vector2 direction)
+    {
+        _characterMover.Move(direction);
+    }
+    
+    
 }
