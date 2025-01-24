@@ -47,12 +47,12 @@ public class MoveInputListener : MonoBehaviour
             _gameInput.Player.Look.performed += LookOnPerformed;
         }
     }
-    
+
     private void OnDisable()
     {
         _gameInput.Player.Look.performed -= LookOnPerformed;
     }
-
+    
     private void LookOnPerformed(InputAction.CallbackContext obj)
     {
         Vector2 rotation = obj.ReadValue<Vector2>();
@@ -63,12 +63,12 @@ public class MoveInputListener : MonoBehaviour
         _cameraRotator.Rotate(rotation);
     }
 
-
     private IEnumerator MoveChecker()
     {
         while (true)
         {
             MovePerformed(_gameInput.Player.Move.ReadValue<Vector2>());
+            SprintPerformed(_gameInput.Player.Sprint.IsPressed());
             yield return null;
         }
     }
@@ -77,6 +77,9 @@ public class MoveInputListener : MonoBehaviour
     {
         _characterMover.Move(direction);
     }
-    
-    
+
+    private void SprintPerformed(bool isSprint)
+    {
+        _characterMover.Sprint(isSprint);
+    }
 }

@@ -28,9 +28,14 @@ public class PlayerController : MonoBehaviour, ICameraRotator, ICharacterMover
     private Transform moveObject;
 
     [SerializeField] 
-    private float moveSpeed;
+    private float moveSpeed = 1;
+    
+    [SerializeField]
+    private float sprintSpeed = 10;
 
 
+    private float _currentMoveSpeed;
+    
     private float _cameraVerticalRotation = 0;
     private float _cameraHorizontalRotation = 0;
 
@@ -72,8 +77,13 @@ public class PlayerController : MonoBehaviour, ICameraRotator, ICharacterMover
 
         // Вычисляем вектор движения
         Vector3 moveVector = yawRotation * new Vector3(move.x, 0, move.y);
-
+        
         // Перемещаем объект
-        moveObject.Translate(moveVector * moveSpeed * Time.deltaTime, Space.World); 
+        moveObject.Translate(moveVector * _currentMoveSpeed * Time.deltaTime, Space.World); 
+    }
+
+    public void Sprint(bool isSprint)
+    {
+        _currentMoveSpeed = isSprint ? sprintSpeed : moveSpeed;
     }
 }
